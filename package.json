@@ -1,0 +1,22 @@
+{
+  "name": "app",
+  "private": true,
+  "scripts": {
+    "build": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets",
+    "build:css": "sass --quiet-deps ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --load-path=node_modules --embed-source-map --no-error-css",
+    "watch": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets --watch",
+    "watch:css": "sass --quiet-deps --watch ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --load-path=node_modules --embed-source-map --no-error-css"
+  },
+  "browserslist": [
+    "defaults"
+  ],
+  "devDependencies": {
+    "esbuild": "^0.27.0",
+    "sass": "^1.93.3"
+  },
+  "dependencies": {
+    "@hotwired/turbo-rails": "^8.0.20",
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.8"
+  }
+}
