@@ -1,0 +1,39 @@
+<%= search_form_for @q, url: books_path, method: :get, html: { class: "row g-3 align-items-end mb-3" } do |f| %>
+  <div class="col-md-4">
+    <%= f.label :title_or_author_i_cont, "Keyword (title or author)", class: "form-label" %>
+    <%= f.search_field :title_or_author_i_cont, class: "form-control", placeholder: "e.g. Clean Code" %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :status_eq, "Status", class: "form-label" %>
+    <%= f.select :status_eq,
+          Book.statuses.keys.map { |k| [k.titleize, k] },
+          { include_blank: "Any" },
+          class: "form-select" %>
+  </div>
+
+  <div class="col-md-2">
+    <%= f.label :rating_gteq, "Rating ≥", class: "form-label" %>
+    <%= f.select :rating_gteq, options_for_select((0..5).to_a, params.dig(:q, :rating_gteq)), { include_blank: "Any" }, class: "form-select" %>
+  </div>
+
+  <div class="col-md-2">
+    <%= f.label :rating_lteq, "Rating ≤", class: "form-label" %>
+    <%= f.select :rating_lteq, options_for_select((0..5).to_a, params.dig(:q, :rating_lteq)), { include_blank: "Any" }, class: "form-select" %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :started_on_gteq, "Started on ≥", class: "form-label" %>
+    <%= f.date_field :started_on_gteq, class: "form-control" %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :finished_on_lteq, "Finished on ≤", class: "form-label" %>
+    <%= f.date_field :finished_on_lteq, class: "form-control" %>
+  </div>
+
+  <div class="col-md-6 d-flex gap-2">
+    <%= f.submit "Search", class: "btn btn-primary" %>
+    <%= link_to "Clear", books_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

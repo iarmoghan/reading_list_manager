@@ -1,0 +1,22 @@
+<p class="mb-3">
+  <%= link_to "Back", books_path, class: "btn btn-outline-secondary" %>
+  <%= link_to "Edit", edit_book_path(@book), class: "btn btn-primary ms-2" %>
+</p>
+
+<div class="card">
+  <div class="card-body">
+    <h3 class="card-title mb-1"><%= @book.title %></h3>
+    <h6 class="card-subtitle text-muted mb-3">by <%= @book.author %></h6>
+
+    <p><strong>Status:</strong> <%= status_badge(@book) %></p>
+    <p><strong>Rating:</strong> <%= stars_for(@book) %> <span class="text-muted">(0–5)</span></p>
+    <p><strong>Started:</strong> <%= @book.started_on&.to_s || "—" %></p>
+    <p><strong>Finished:</strong> <%= @book.finished_on&.to_s || "—" %></p>
+
+    <% if @book.notes.present? %>
+      <hr>
+      <p class="mb-0"><strong>Notes</strong></p>
+      <p><%= simple_format(@book.notes) %></p>
+    <% end %>
+  </div>
+</div>
