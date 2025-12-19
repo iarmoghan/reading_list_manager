@@ -3,49 +3,79 @@
   <%= link_to "New Book", new_book_path, class: "btn btn-primary" %>
 </div>
 
-<%= render "search" %>
-
-<% if @books.any? %>
-  <table class="table table-striped align-middle">
-    <thead>
-      <tr>
-        <th><%= sort_link @q, :title, "Title" %></th>
-        <th><%= sort_link @q, :author, "Author" %></th>
-        <th><%= sort_link @q, :status, "Status" %></th>
-        <th><%= sort_link @q, :rating, "Rating" %></th>
-        <th><%= sort_link @q, :started_on, "Started" %></th>
-        <th><%= sort_link @q, :finished_on, "Finished" %></th>
-        <th class="text-end"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @books.each do |book| %>
-        <tr id="<%= dom_id(book) %>">
-          <td><%= link_to book.title, book %></td>
-          <td><%= book.author %></td>
-          <td><%= status_badge(book) %></td>
-          <td><%= stars_for(book) %></td>
-          <td><%= book.started_on&.to_s || "—" %></td>
-          <td><%= book.finished_on&.to_s || "—" %></td>
-          <td class="text-end">
-            <%= link_to "Edit", edit_book_path(book), class: "btn btn-sm btn-outline-secondary" %>
-            <%= link_to "Delete", book,
-                  data: { turbo_method: :delete, turbo_confirm: "Delete this book?" },
-                  class: "btn btn-sm btn-outline-danger ms-1" %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-
-  <div class="d-flex justify-content-center">
-    <%= paginate @books, params: request.query_parameters %>
+<%= search_form_for @q, url: books_path, method: :get, class: "row g-3 align-items-end mb-3" do |f| %>
+  <div class="col-md-4">
+    <%= f.label :title_or_author_i_cont, "Keyword (title or author)", class: "form-label" %>
+    <%= f.search_field :title_or_author_i_cont, class: "form-control", placeholder: "e.g. Clean Code" %>
   </div>
-<% else %>
-  <div class="alert alert-info">
-    No books match your filters. <%= link_to "Clear filters", books_path, class: "alert-link" %>.
+
+  <div class="col-md-3">
+    <%= f.label :status_eq, "Status", class: "form-label" %>
+    <%= f.select :status_eq,
+      options_for_select([["Any", ""]] + Book.statuses.map { |k, v| [k.humanize, v] }, params.dig(:q, :status_eq)),
+      {},
+      class: "form-select" %>
+  </div>
+
+  <div class="col-md-2">
+    <%= f.label :rating_gteq, "Rating ≥", class: "form-label" %>
+    <%= f.select :rating_gteq, options_for_select([["Any", ""]] + (0..5).map { |n| [n, n] }, params.dig(:q, :rating_gteq)), {}, class: "form-select" %>
+  </div>
+
+  <div class="col-md-2">
+    <%= f.label :rating_lteq, "Rating ≤", class: "form-label" %>
+    <%= f.select :rating_lteq, options_for_select([["Any", ""]] + (0..5).map { |n| [n, n] }, params.dig(:q, :rating_lteq)), {}, class: "form-select" %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :started_on_gteq, "Started on ≥", class: "form-label" %>
+    <%= f.date_field :started_on_gteq, class: "form-control" %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :finished_on_lteq, "Finished on ≤", class: "form-label" %>
+    <%= f.date_field :finished_on_lteq, class: "form-control" %>
+  </div>
+
+  <div class="col-md-6 d-flex gap-2">
+    <%= f.submit "Search", class: "btn btn-primary" %>
+    <%= link_to "Clear", books_path, class: "btn btn-outline-secondary" %>
   </div>
 <% end %>
 
+<table class="table table-striped align-middle">
+  <thead>
+    <tr>
+      <th><%= sort_link(@q, :title, "Title") %></th>
+      <th><%= sort_link(@q, :author, "Author") %></th>
+      <th><%= sort_link(@q, :status, "Status") %></th>
+      <th><%= sort_link(@q, :rating, "Rating") %></th>
+      <th><%= sort_link(@q, :started_on, "Started") %></th>
+      <th><%= sort_link(@q, :finished_on, "Finished") %></th>
+      <th class="text-end"></th>
+    </tr>
+  </thead>
 
+  <tbody>
+    <% @books.each do |book| %>
+      <tr id="<%= dom_id(book) %>">
+        <td><%= link_to book.title, book_path(book) %></td>
+        <td><%= book.author %></td>
+        <td><%= status_badge(book) %></td>
+        <td><%= star_rating(book.rating) %></td>
+        <td><%= book.started_on.present? ? book.started_on.to_s : "—" %></td>
+        <td><%= book.finished_on.present? ? book.finished_on.to_s : "—" %></td>
+        <td class="text-end">
+          <%= link_to "Edit", edit_book_path(book), class: "btn btn-sm btn-outline-secondary" %>
+          <%= link_to "Delete", book_path(book),
+                data: { turbo_method: :delete, turbo_confirm: "Delete this book?" },
+                class: "btn btn-sm btn-outline-danger ms-1" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
+<div class="d-flex justify-content-center">
+  <%= paginate @books %>
+</div>
