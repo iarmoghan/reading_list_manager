@@ -1,57 +1,60 @@
-# db/seeds.rb
-require "date"
 
-puts "Seeding demo books…"
-
-demo = [
-  { title: "Atomic Habits", author: "James Clear", status: :finished, rating: 5, notes: "Great on systems.", started_on: Date.new(2024,1,5), finished_on: Date.new(2024,1,20) },
-  { title: "Clean Code", author: "Robert C. Martin", status: :reading, rating: 4, notes: "Functions & naming are gold.", started_on: Date.today - 14 },
-  { title: "The Pragmatic Programmer", author: "Andrew Hunt, David Thomas", status: :wishlist, rating: nil },
-  { title: "Deep Work", author: "Cal Newport", status: :finished, rating: 4, started_on: Date.new(2024,3,10), finished_on: Date.new(2024,3,25) },
-  { title: "The Lean Startup", author: "Eric Ries", status: :wishlist, rating: nil },
-  { title: "Refactoring", author: "Martin Fowler", status: :reading, rating: 5, started_on: Date.today - 7 },
-  { title: "Designing Data-Intensive Applications", author: "Martin Kleppmann", status: :wishlist, rating: nil }
+demo_books = [
+  {
+    title: "Clean Code",
+    author: "Robert C. Martin",
+    status: "finished",
+    rating: 5,
+    started_on: Date.new(2025, 10, 1),
+    finished_on: Date.new(2025, 10, 20),
+    notes: "Focus: naming, SRP, refactoring."
+  },
+  {
+    title: "The Pragmatic Programmer",
+    author: "Andrew Hunt & David Thomas",
+    status: "reading",
+    rating: 4,
+    started_on: Date.new(2025, 11, 5),
+    finished_on: nil,
+    notes: "Great practical mindset."
+  },
+  {
+    title: "Design Patterns",
+    author: "Gamma, Helm, Johnson, Vlissides",
+    status: "wishlist",
+    rating: 0,
+    started_on: nil,
+    finished_on: nil,
+    notes: "Classic reference (GoF)."
+  },
+  {
+    title: "Eloquent Ruby",
+    author: "Russ Olsen",
+    status: "finished",
+    rating: 4,
+    started_on: Date.new(2025, 9, 10),
+    finished_on: Date.new(2025, 9, 28),
+    notes: "Ruby idioms and style."
+  },
+  {
+    title: "Refactoring",
+    author: "Martin Fowler",
+    status: "reading",
+    rating: 5,
+    started_on: Date.new(2025, 12, 1),
+    finished_on: nil,
+    notes: "Refactoring patterns + examples."
+  }
 ]
 
-# Non-destructive: create if missing (same title+author), leave existing records untouched
-demo.each do |attrs|
-  book = Book.find_or_create_by!(title: attrs[:title], author: attrs[:author])
-  if book.created_at == book.updated_at # just created
-    book.update!(attrs.except(:title, :author))
+demo_books.each do |attrs|
+  key = { title: attrs[:title], author: attrs[:author] }
+
+  book = Book.find_or_initialize_by(key)
+  if book.new_record?
+    book.assign_attributes(attrs)
+    book.save!
   end
 end
 
-# A few extra randomized books for pagination & filters (still non-destructive titles)
-titles  = ["The Phoenix Project", "Clean Architecture", "You Don't Know JS", "Eloquent Ruby", "Domain-Driven Design"]
-authors = ["Gene Kim", "Robert C. Martin", "Kyle Simpson", "Russ Olsen", "Eric Evans"]
-
-3.times do
-  title  = titles.sample
-  author = authors.sample
-
-  # Skip if we already have this exact pair from above
-  next if Book.exists?(title: title, author: author)
-
-  started = [nil, Date.today - rand(10..60)].sample
-  finished = started ? (started + rand(3..20)) : nil
-  rating = [nil, 2, 3, 4, 5].sample
-  status = if finished
-             :finished
-           elsif started
-             :reading
-           else
-             :wishlist
-           end
-
-  Book.create!(
-    title: title,
-    author: author,
-    status: status,
-    rating: rating,
-    notes: ["", "Worth revisiting", "Recommended"].sample,
-    started_on: started,
-    finished_on: finished
-  )
-end
-
-puts "Seed complete. Books count: #{Book.count}"
+puts "Seeded/verified #{demo_books.size} demo books."

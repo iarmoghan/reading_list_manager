@@ -1,24 +1,49 @@
-# README
+# Reading List Manager
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Ruby on Rails app to manage a personal reading list.
+Users can add books, edit them, delete them, and browse with search, sorting, and pagination.
 
-Things you may want to cover:
+## Live Demo
+- https://reading-list-manager.onrender.com/books
 
-* Ruby version
+## Features
+- Books CRUD (create, read, update, delete)
+- Search + filters (Ransack)
+- Sorting
+- Pagination (Pagy)
+- Bootstrap UI
+- Automated tests + GitHub Actions CI
 
-* System dependencies
+## Tech Stack
+- Ruby on Rails
+- PostgreSQL
+- Bootstrap
+- GitHub Actions (CI)
+- Render (deployment)
 
-* Configuration
+## Local Setup
 
-* Database creation
+### Requirements
+- Ruby (via rbenv/rvm)
+- PostgreSQL
+- Node + npm
 
-* Database initialization
+### Install
+```bash
+bundle install
+npm install
+bin/rails db:create db:migrate db:seed
+bin/dev
+```
 
-* How to run the test suite
+### App runs at:
+- http://localhost:3000
 
-* Services (job queues, cache servers, search engines, etc.)
+### Run Tests
+- bin/rails test
 
-* Deployment instructions
+### Notes
+- Render free tier can spin down after inactivity and take time to “wake up”.
 
-* ...
+
+
